@@ -17,9 +17,11 @@ module.exports = function(url, options){
     offset = offset || {x: 0, y: 0};
 
     return d3.geo.transform({
-      point: function(y, x) {
-        var point = layer._map.latLngToLayerPoint(new L.LatLng(x, y));
-        this.stream.point(point.x-offset.x, point.y-offset.y);
+      point: function(y, x, z) {
+        if (typeof z !== 'undefined' && z && z >= 20) {
+          var point = layer._map.latLngToLayerPoint(new L.LatLng(x, y));
+          this.stream.point(point.x-offset.x, point.y-offset.y);
+        }
       }
     });
   };
@@ -57,6 +59,7 @@ module.exports = function(url, options){
 
       var layers = {};
       for (var key in data.objects) {
+        topojson.presimplify(data);
         layers[key] = topojson.feature(data, data.objects[key]);
       }
 
