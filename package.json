@@ -25,7 +25,6 @@
   "homepage": "https://github.com/devTristan/hoverboard",
   "dependencies": {
     "d3": "^3.5.16",
-    "hidpi-canvas": "github:jondavidjohn/hidpi-canvas-polyfill",
     "leaflet": "^0.7.7",
     "topojson": "^1.6.24"
   }

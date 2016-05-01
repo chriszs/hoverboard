@@ -1,4 +1,4 @@
-  var hidpiCanvas = require('hidpi-canvas'),   
+  var hidpiCanvas = require('./lib/hidpi-canvas.js'),  
     topojson = require('topojson'),   
     L = require('leaflet'),
     d3 = require('d3');
