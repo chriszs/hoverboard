@@ -31,7 +31,7 @@ module.exports = function(url, options){
       var xhr = d3.xhr(url).responseType('json').get(callback);
       return xhr.abort.bind(xhr);
     },
-    parse: function(data, canvas){
+    parse: function(data, tilePoint){
       var tileOffset = {
         x: parseInt(d3.select(canvas).style('left').slice(0, -2)),
         y: parseInt(d3.select(canvas).style('top').slice(0, -2))
@@ -39,7 +39,7 @@ module.exports = function(url, options){
 
       return {
         data: data,
-        projection: projections.WGS84(tileOffset)
+        projection: projections.WGS84(layer._getTilePos(tilePoint))
       }
     }
   };
@@ -49,12 +49,7 @@ module.exports = function(url, options){
       var xhr = d3.xhr(url).responseType('json').get(callback);
       return xhr.abort.bind(xhr);
     },
-    parse: function(data, canvas){
-      var tileOffset = {
-        x: parseInt(d3.select(canvas).style('left').slice(0, -2)),
-        y: parseInt(d3.select(canvas).style('top').slice(0, -2))
-      };
-
+    parse: function(data, tilePoint){
       var layers = {};
       for (var key in data.objects) {
         layers[key] = topojson.feature(data, data.objects[key]);
@@ -62,7 +57,7 @@ module.exports = function(url, options){
 
       return {
         data: layers,
-        projection: projections.WGS84(tileOffset)
+        projection: projections.WGS84(layer._getTilePos(tilePoint))
       }
     }
   };
@@ -128,7 +123,6 @@ module.exports = function(url, options){
 
   layer.drawTile = function(canvas, tilePoint, zoom) {
     var context = canvas.getContext('2d');
-    tilePoint = {x: tilePoint.x, y: tilePoint.y, z: zoom};
 
     var mode;
     if (modeOption == 'auto') {
@@ -148,13 +142,13 @@ module.exports = function(url, options){
       mode = modes[modeOption];
     }
 
-    var url = layer.getTileUrl(tilePoint);
+    var url = layer.getTileUrl({x: tilePoint.x, y: tilePoint.y, z: zoom});
     mode.get(url, function(err, xhr){
       if (err) {
         throw err;
       }
       
-      var result = mode.parse(xhr.response, canvas);
+      var result = mode.parse(xhr.response, tilePoint);
 
       var path = d3.geo.path()
         .projection(result.projection)
@@ -175,7 +169,7 @@ module.exports = function(url, options){
 
           layer.__currentLayer = renderer.layer;
 
-          renderer.run(context, result.data[renderer.layer].features, tilePoint, function(features){
+          renderer.run(context, result.data[renderer.layer].features, {x: tilePoint.x, y: tilePoint.y, z: zoom}, function(features){
             if (typeof features == 'object' && !Array.isArray(features)) {
               features = [features];
             }
