@@ -218,6 +218,10 @@ RenderingInterface.prototype.maxZoom = function(maxZoom){
   return this;
 };
 
+RenderingInterface.prototype.onAdd = function () {
+  // no-op
+};
+
 RenderingInterface.prototype.fill = function(color){
   this.instructions.push({
     type: 'fill',
