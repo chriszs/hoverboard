@@ -1,4 +1,4 @@
-  var hidpiCanvas = require('./lib/hidpi-canvas.js'),  
+var hidpiCanvas = require('./lib/hidpi-canvas.js'),  
     topojson = require('topojson'),   
     L = require('leaflet'),
     d3 = require('d3');
@@ -32,11 +32,6 @@ module.exports = function(url, options){
       return xhr.abort.bind(xhr);
     },
     parse: function(data, tilePoint){
-      var tileOffset = {
-        x: parseInt(d3.select(canvas).style('left').slice(0, -2)),
-        y: parseInt(d3.select(canvas).style('top').slice(0, -2))
-      };
-
       return {
         data: data,
         projection: projections.WGS84(layer._getTilePos(tilePoint))
@@ -145,10 +140,13 @@ module.exports = function(url, options){
     var url = layer.getTileUrl({x: tilePoint.x, y: tilePoint.y, z: zoom});
     mode.get(url, function(err, xhr){
       if (err) {
-        throw err;
+        layer.tileDrawn(canvas);
+        return;
       }
       
-      var result = mode.parse(xhr.response, tilePoint);
+      var data = xhr.response || xhr;
+
+      var result = mode.parse(data, tilePoint);
 
       var path = d3.geo.path()
         .projection(result.projection)
