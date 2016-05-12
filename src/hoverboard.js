@@ -195,12 +195,13 @@ var RenderingInterface = function(layer, name){
   this.whereConditions = [];
 
   var self = this;
+  /*
   Object.keys(layer.__proto__).forEach(function(key){
     self[key] = function(){
       return layer[key].apply(layer, arguments);
     };
-  });
-  ['render', 'data', 'mode', 'addTo'].forEach(function(key){
+  });*/
+  ['render', 'data', 'mode', 'addTo', 'constructor', 'options', 'initialize', 'redraw', '_redrawTile', '_createTile', '_loadTile', 'drawTile', 'tileDrawn', '_initHooks', 'callInitHooks'].forEach(function(key){
     self[key] = function(){
       return layer[key].apply(layer, arguments);
     };
