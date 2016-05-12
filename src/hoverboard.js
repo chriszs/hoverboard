@@ -41,7 +41,7 @@ module.exports = function(url, options){
   modes.topojson = {
     extensions: ['topojson'],
     get: function(url, callback){
-      var xhr = d3.xhr(url).responseType('json').get(callback);
+      var xhr = d3.json(url, callback);
       return xhr.abort.bind(xhr);
     },
     parse: function(data, tilePoint){
@@ -63,7 +63,7 @@ module.exports = function(url, options){
       return xhr.abort.bind(xhr);
     },
     parse: function(data, canvas){
-      var tile = new VectorTile( new pbf( new Uint8Array(data) ) );
+      // var tile = new VectorTile( new pbf( new Uint8Array(data) ) );
 
       var layers = {};
 
@@ -195,12 +195,13 @@ var RenderingInterface = function(layer, name){
   this.whereConditions = [];
 
   var self = this;
+  /*
   Object.keys(layer.__proto__).forEach(function(key){
     self[key] = function(){
       return layer[key].apply(layer, arguments);
     };
-  });
-  ['render', 'data', 'mode', 'addTo'].forEach(function(key){
+  });*/
+  ['render', 'data', 'mode', 'addTo', 'constructor', 'options', 'initialize', 'redraw', '_redrawTile', '_createTile', '_loadTile', 'drawTile', 'tileDrawn', '_initHooks', 'callInitHooks'].forEach(function(key){
     self[key] = function(){
       return layer[key].apply(layer, arguments);
     };
@@ -325,8 +326,9 @@ RenderingInterface.prototype.run = function(context, features, tile, draw){
     } else if (instruction.type == 'stroke') {
       if (typeof instruction.width == 'number' && typeof instruction.color == 'string') {
         //draw all at once
+        /*
         context.lineWidth = instruction.width;
-        context.strokeStyle = instruction.color;
+        context.strokeStyle = instruction.color;*/
         draw(features);
         context.stroke();
       } else if (typeof instruction.width == 'function' || typeof instruction.color == 'function') {
